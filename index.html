@@ -812,16 +812,12 @@ function chronoTab(){
  document.getElementById("trs").onclick=function(){TM.run=false;TM.base=0;TM.last="";TM.fin=false;relWL();sync();tick()};
  sync();tick();
 }
-var LM_DEV=/\.github\.io$/i.test(location.hostname);
-function lmFlag(){var b=document.createElement("div");b.textContent="TEST";b.setAttribute("style","position:fixed;top:0;left:0;z-index:2147483647;background:#e11d48;color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.12em;padding:4px 10px;border-bottom-right-radius:8px;pointer-events:none");document.body.appendChild(b);document.title="[TEST] "+document.title}
-if(LM_DEV){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",lmFlag);else lmFlag()}
-var SB_URL=LM_DEV?"https://vrgocgrnizgfggwrwxfi.supabase.co":"https://mamzufeartpmdvspsngq.supabase.co",SB_KEY=LM_DEV?"sb_publishable_JYLJnhVEjAn3Qxe4KDOKJw_U2hsfExY":"sb_publishable_6xbqzPhtHXCHI61c3mVG-w_NIFSBaga";
 /* ===== App ===== */
 /* Programmation publiée en ligne (Supabase) : fusion avec les semaines intégrées */
 var PROG_SITE="prod",BASEWK=WK.slice();
 function progKey(o){return (+o.y||2026)*100+(+o.w)}
 var UPCOMING=[];
-var TESTW=null;if(LM_DEV){try{TESTW=JSON.parse(localStorage.getItem("lm_testwk")||"null")}catch(e){TESTW=null}}
+var TESTW=null;if(PROG_SITE==="test"){try{TESTW=JSON.parse(localStorage.getItem("lm_testwk")||"null")}catch(e){TESTW=null}}
 function isTestRow(y,w){return !!TESTW&&+TESTW.y===+y&&+TESTW.w===+w}
 function inTest(){return !!TESTW&&!!cur&&isTestRow(+cur.y||2026,cur.w)}
 function tflag(o){if(inTest())o.t=1;return o}
@@ -1076,6 +1072,10 @@ function noteHTML(di){var k=cur.w+"|"+cur.days[di].n,lk=isLocked(di);
  return "<div class='blk snote'>"+(isNew(cur)?"<p class='lb' style='margin-top:0'>Ressenti de la séance</p>"+rpeHTML(SRPE[k]).replace("class='rpe'","class='rpe' id='srpe' data-nk='"+esc(k)+"'"):"")+"<label class='lb' for='snote'>Ma note de séance</label><textarea id='snote' data-nk='"+esc(k)+"' rows='3' maxlength='500' placeholder='Ressenti, douleur, technique à travailler…'"+(lk?" disabled":"")+">"+esc(SNOTE[k]||"")+"</textarea></div>"}
 
 /* ===== Compte en ligne (Supabase) ===== */
+var LM_DEV=/\.github\.io$/i.test(location.hostname);
+function lmFlag(){var b=document.createElement("div");b.textContent="TEST";b.setAttribute("style","position:fixed;top:0;left:0;z-index:2147483647;background:#e11d48;color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.12em;padding:4px 10px;border-bottom-right-radius:8px;pointer-events:none");document.body.appendChild(b);document.title="[TEST] "+document.title}
+if(LM_DEV){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",lmFlag);else lmFlag()}
+var SB_URL=LM_DEV?"https://vrgocgrnizgfggwrwxfi.supabase.co":"https://mamzufeartpmdvspsngq.supabase.co",SB_KEY=LM_DEV?"sb_publishable_JYLJnhVEjAn3Qxe4KDOKJw_U2hsfExY":"sb_publishable_6xbqzPhtHXCHI61c3mVG-w_NIFSBaga";
 var SB_ON=!/claude|anthropic/i.test(location.hostname)&&location.protocol!=="file:";
 var SYNC_KEYS=["meute","meute_del","meute_pr","meute_obj","meute_lock","meute_prh","meute_bm","meute_note","meute_sexe","meute_lvl","meute_avc","meute_genre","meute_rpe","meute_pub"];
 var SB=null;try{SB=JSON.parse(localStorage.getItem("lm_sb")||"null")}catch(e){SB=null}
@@ -1437,7 +1437,7 @@ function progFetch(){if(!SB_ON)return Promise.resolve();
   if(CURTAB==="week"){openWeek(WK[0])}else if(CURTAB==="hist")histTab();else{var f=WK.filter(function(o){return o.w===curW})[0];if(f)cur=f}
  }).catch(function(){})}
 function pubView(){var y=new Date().getFullYear(),nxt=WK.length?(+WK[0].w)+1:1;
- var h="<div class='blk ccard'><div class='chead'><b>Publier une semaine</b></div><p class='s'>Colle ta programmation : après l’aperçu, elle est visible par tous les athlètes à la prochaine ouverture de l’appli"+(LM_DEV?" (site de test uniquement)":"")+".</p>"+
+ var h="<div class='blk ccard'><div class='chead'><b>Publier une semaine</b></div><p class='s'>Colle ta programmation : après l’aperçu, elle est visible par tous les athlètes à la prochaine ouverture de l’appli"+(PROG_SITE==="test"?" (site de test uniquement)":"")+".</p>"+
  "<label class='lb' for='cfrom' style='margin-top:0'>Modifier une semaine existante (facultatif)</label><select id='cfrom'><option value=''>Nouvelle semaine</option>"+UPCOMING.map(function(o,i){return "<option value='u"+i+"'>Semaine "+esc(o.w)+" (à venir)</option>"}).join("")+WK.map(function(o,i){return "<option value='"+i+"'>Semaine "+esc(o.w)+((o.y||2026)!==new Date().getFullYear()?" · "+esc(o.y||2026):"")+"</option>"}).join("")+(PROGROWS.filter(function(r){return r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()}).map(function(r){return "<option value='p"+esc(r.annee)+"|"+esc(r.semaine)+"'>Semaine "+esc(r.semaine)+" (programmée)</option>"}).join(""))+"</select>"+
  "<div class='row'><div style='flex:1'><label class='lb' for='cw'>Semaine n°</label><input id='cw' type='text' inputmode='numeric' maxlength='2' value='"+nxt+"'></div><div style='flex:1'><label class='lb' for='cy'>Année</label><input id='cy' type='text' inputmode='numeric' maxlength='4' value='"+y+"'></div></div>"+
  "<label class='lb' for='cd'>Dates (facultatif)</label><input id='cd' type='text' maxlength='40' placeholder='ex. 9 – 13 nov.' style='width:100%'>"+
@@ -1446,7 +1446,7 @@ function pubView(){var y=new Date().getFullYear(),nxt=WK.length?(+WK[0].w)+1:1;
  "<label class='lb' for='ct'>Programmation (Lundi à Vendredi)</label><div class='lnw'><div class='lnn' id='ctn' aria-hidden='true'>1</div><textarea id='ct' rows='16' wrap='off' spellcheck='false' autocapitalize='off' placeholder='Lundi : …&#10;Focus : …&#10;A. …'></textarea></div><p class='s' id='ctl'></p>"+
  "<div class='row' style='margin-top:10px'><button class='sv' data-pb='prev'>Voir l’aperçu</button></div><div id='cpv'></div><p class='s' id='cmsg' role='status'></p></div>";
  var on=PROGROWS.filter(function(r){return !(r.data&&r.data.ann)}).slice().sort(function(a,b){return (b.annee*100+b.semaine)-(a.annee*100+a.semaine)});
- h+="<div class='blk ccard'><div class='chead'><b>Semaines publiées en ligne</b><span class='tyb'>"+on.length+"</span></div>"+(on.length?on.map(function(r){return "<div class='rrow'><span class='dch'>S"+esc(r.semaine)+"</span><span class='rb'><span class='nm'>Semaine "+esc(r.semaine)+" · "+esc(r.annee)+"</span><span class='s'>"+(r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()?"⏰ programmée pour le "+esc(fdt(r.data.pub)):"publiée le "+esc(fdt(r.publie_le)))+"</span></span>"+(LM_DEV?"<button class='sv alt' data-tw='"+(isTestRow(r.annee,r.semaine)?"stop":esc(r.annee)+"|"+esc(r.semaine))+"'>"+(isTestRow(r.annee,r.semaine)?"Arrêter le test":"🧪 Tester")+"</button>":"")+"<button class='sv alt' data-pd='"+esc(r.annee)+"|"+esc(r.semaine)+"'>Supprimer</button></div>"}).join(""):"<p class='s'>Aucune pour l’instant.</p>")+
+ h+="<div class='blk ccard'><div class='chead'><b>Semaines publiées en ligne</b><span class='tyb'>"+on.length+"</span></div>"+(on.length?on.map(function(r){return "<div class='rrow'><span class='dch'>S"+esc(r.semaine)+"</span><span class='rb'><span class='nm'>Semaine "+esc(r.semaine)+" · "+esc(r.annee)+"</span><span class='s'>"+(r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()?"⏰ programmée pour le "+esc(fdt(r.data.pub)):"publiée le "+esc(fdt(r.publie_le)))+"</span></span>"+(PROG_SITE==="test"?"<button class='sv alt' data-tw='"+(isTestRow(r.annee,r.semaine)?"stop":esc(r.annee)+"|"+esc(r.semaine))+"'>"+(isTestRow(r.annee,r.semaine)?"Arrêter le test":"🧪 Tester")+"</button>":"")+"<button class='sv alt' data-pd='"+esc(r.annee)+"|"+esc(r.semaine)+"'>Supprimer</button></div>"}).join(""):"<p class='s'>Aucune pour l’instant.</p>")+
  "<p class='s'>Les semaines "+esc(BASEWK.map(function(o){return o.w}).sort(function(a,b){return a-b}).filter(function(x,i,a){return i===0||i===a.length-1}).join(" à "))+" sont intégrées au site. Pour en corriger une, publie-la à nouveau avec le même numéro.</p></div>";
  return h}
 function lnSync(){var ct=document.getElementById("ct"),n=document.getElementById("ctn"),l=document.getElementById("ctl");if(!ct||!n)return;
@@ -2618,7 +2618,7 @@ box.onclick=function(e){
  if(t.dataset&&t.dataset.ms){mesSave();return}
  if(t.dataset&&t.dataset.msd){if(!t.dataset.arm){t.dataset.arm="1";t.textContent="Supprimer ?";t.classList.add("arm");return}mesDel(t.dataset.msd);return}
  if(t.dataset&&t.dataset.cal){calMove(+t.dataset.cal);return}
- if(t.dataset&&t.dataset.tw){if(!LM_DEV)return;if(t.dataset.tw==="stop"){try{localStorage.removeItem("lm_testwk")}catch(e){}}else{var tp=t.dataset.tw.split("|");try{localStorage.setItem("lm_testwk",JSON.stringify({y:+tp[0],w:+tp[1]}))}catch(e){}}
+ if(t.dataset&&t.dataset.tw){if(PROG_SITE!=="test")return;if(t.dataset.tw==="stop"){try{localStorage.removeItem("lm_testwk")}catch(e){}}else{var tp=t.dataset.tw.split("|");try{localStorage.setItem("lm_testwk",JSON.stringify({y:+tp[0],w:+tp[1]}))}catch(e){}}
   try{localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload();return}
  if(t.dataset&&t.dataset.prj){prjOpen(t.dataset.prj);return}
  if(t.dataset&&t.dataset.cv){calAsk(t.dataset.cv);return}
@@ -2812,12 +2812,12 @@ function prjOpen(l){var I=prjInfo(l),P=I.pts,last=P[P.length-1];
  ovlShow(h)}
 
 /* ===== Site de test : jouer une semaine programmée comme semaine en cours ===== */
-if(LM_DEV){var _openWeekT=openWeek;openWeek=function(o){var r=_openWeekT.apply(this,arguments);try{if(inTest()){var bx=document.getElementById("tstb");if(!bx){bx=document.createElement("div");bx.id="tstb";bx.className="tstb";var day=document.getElementById("day");day.parentNode.insertBefore(bx,day)}
+if(PROG_SITE==="test"){var _openWeekT=openWeek;openWeek=function(o){var r=_openWeekT.apply(this,arguments);try{if(inTest()){var bx=document.getElementById("tstb");if(!bx){bx=document.createElement("div");bx.id="tstb";bx.className="tstb";var day=document.getElementById("day");day.parentNode.insertBefore(bx,day)}
   bx.innerHTML="<b>🧪 Mode test · Semaine "+esc(o.w)+" ("+esc(o.y||2026)+")</b><span>Jouée comme semaine en cours, sur ce téléphone uniquement. Tes résultats de test restent cachés dans l’appli réelle ; binômes et classement non enregistrés.</span><button class='sv alt' data-tw='stop'>Arrêter le test</button>";bx.querySelector("button").onclick=function(){try{localStorage.removeItem("lm_testwk");localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload()}}
  else{var b2=document.getElementById("tstb");if(b2)b2.remove()}}catch(e){}return r}}
 
-function twBtn(o){if(!LM_DEV||!o)return "";var y=+o.y||2026,on=isTestRow(y,o.w);return "<button class='sv alt twb' data-tw='"+(on?"stop":y+"|"+o.w)+"'>"+(on?"Arrêter le test de la semaine "+esc(o.w):"🧪 Tester la semaine "+esc(o.w)+" comme semaine en cours")+"</button>"}
-if(LM_DEV)document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.target.closest("[data-tw]");if(!t)return;ev.stopPropagation();ev.preventDefault();
+function twBtn(o){if(PROG_SITE!=="test"||!o)return "";var y=+o.y||2026,on=isTestRow(y,o.w);return "<button class='sv alt twb' data-tw='"+(on?"stop":y+"|"+o.w)+"'>"+(on?"Arrêter le test de la semaine "+esc(o.w):"🧪 Tester la semaine "+esc(o.w)+" comme semaine en cours")+"</button>"}
+if(PROG_SITE==="test")document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.target.closest("[data-tw]");if(!t)return;ev.stopPropagation();ev.preventDefault();
  if(t.dataset.tw==="stop"){try{localStorage.removeItem("lm_testwk")}catch(e){}}else{var tp=t.dataset.tw.split("|");try{localStorage.setItem("lm_testwk",JSON.stringify({y:+tp[0],w:+tp[1]}))}catch(e){}}
  try{localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload()},true);
 
@@ -2829,7 +2829,7 @@ var DEMO_P={rx:"B. Back Squat : 5 séries de 5 reps @ 75 % du 1RM Back Squat\nRe
  sc:"B. Back Squat : 5 séries de 8 reps @ 60 % du 1RM Back Squat\nRepos : 90 s entre les séries\nC. Metcon : AMRAP 12 min\n10 Wall Balls (♂ 6 kg | ♀ 4 kg)\n8 Burpees\n9 Hang Power Cleans (♂ 30 kg | ♀ 20 kg)\n10 Sit-ups\n"};
 var DEMO_B="➕ BONUS (10 min) — Gainage\n3 rounds : 30 s Hollow Hold, 30 s Side Plank de chaque côté";
 function demoTxt(){return DEMO_HEAD+(DEMO_P[DM.lvl]||DEMO_P[""])+DEMO_B}
-function demoAllowed(){return LM_DEV}
+function demoAllowed(){return PROG_SITE==="test"}
 function demoWith(fn){var L0=LVL,S0=SX,G0=GENRE,P0=PRM.back,C0=CURPAIR;LVL=DM.lvl;SX=DM.sx;GENRE=DM.sx;PRM.back=String(DM.pr);CURPAIR=null;try{return fn()}finally{LVL=L0;SX=S0;GENRE=G0;if(P0===undefined)delete PRM.back;else PRM.back=P0;CURPAIR=C0}}
 function demoSeg(k,opts,v){return "<div class='dmseg' role='group'>"+opts.map(function(o){return "<button data-dm='"+k+"|"+o[0]+"' aria-pressed='"+(o[0]===v)+"'"+(o[0]===v?" class='on'":"")+">"+o[1]+"</button>"}).join("")+"</div>"}
 function demoDayHTML(){return demoWith(function(){var d=parseWeek(demoTxt())[0],pn=DM.lvl==="rx"?"🐺 Alpha (RX)":DM.lvl==="sc"?"🐾 Louveteau (Scaled)":"🏹 Chasseur (intermédiaire)",h="<div class='dmday'><p class='dmpv'>Version "+pn+" · "+(DM.sx==="f"?"♀ Femme":"♂ Homme")+"</p><h3 class='dmdt'>"+esc(d.t)+"</h3><p class='focus'>"+esc(d.f)+"</p>";
