@@ -656,8 +656,6 @@ body.gated #bar,body.gated #tabs,body.gated #coachbtn,body.gated #ann,body.gated
 .prjk i{display:inline-block;width:18px;height:0;border-top:2.5px solid var(--acc)}
 .prjk i.pt{width:9px;height:9px;border:2px solid var(--ink);border-radius:50%}.prjk i.trd{border-top-style:dashed}
 .prjk i.prl{border-top:2px dotted var(--mute)}.prjk i.obl{border-top:2px dashed #2fae7a}
-.tstb{background:#fde68a;color:#3b2f00;border-radius:12px;padding:10px 12px;margin:8px 0;display:flex;flex-direction:column;gap:4px;font-size:13px}.tstb b{font-size:14px}.tstb .sv{align-self:flex-start;margin-top:4px}
-.twb{display:block;width:100%;margin:-4px 0 12px;font-size:13px;padding:8px 10px}
 .demo .dmhero{text-align:center;padding:14px 4px 4px}.demo .dmhero h2{margin:4px 0 8px}.demo .dmhero p{color:var(--mute)}
 .dmf{margin-top:12px}
 .dmseg{display:flex;gap:6px;margin:4px 0 10px}.dmseg button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 4px;font:inherit;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}.dmseg button small{font-weight:500;font-size:11px;color:var(--mute)}
@@ -812,21 +810,22 @@ function chronoTab(){
  document.getElementById("trs").onclick=function(){TM.run=false;TM.base=0;TM.last="";TM.fin=false;relWL();sync();tick()};
  sync();tick();
 }
+var LM_DEV=/\.github\.io$/i.test(location.hostname);
+function lmFlag(){var b=document.createElement("div");b.textContent="TEST";b.setAttribute("style","position:fixed;top:0;left:0;z-index:2147483647;background:#e11d48;color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.12em;padding:4px 10px;border-bottom-right-radius:8px;pointer-events:none");document.body.appendChild(b);document.title="[TEST] "+document.title}
+if(LM_DEV){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",lmFlag);else lmFlag()}
+var SB_URL=LM_DEV?"https://vrgocgrnizgfggwrwxfi.supabase.co":"https://mamzufeartpmdvspsngq.supabase.co",SB_KEY=LM_DEV?"sb_publishable_JYLJnhVEjAn3Qxe4KDOKJw_U2hsfExY":"sb_publishable_6xbqzPhtHXCHI61c3mVG-w_NIFSBaga";
 /* ===== App ===== */
 /* Programmation publiée en ligne (Supabase) : fusion avec les semaines intégrées */
 var PROG_SITE="prod",BASEWK=WK.slice();
 function progKey(o){return (+o.y||2026)*100+(+o.w)}
 var UPCOMING=[];
-var TESTW=null;if(PROG_SITE==="test"){try{TESTW=JSON.parse(localStorage.getItem("lm_testwk")||"null")}catch(e){TESTW=null}}
-function isTestRow(y,w){return !!TESTW&&+TESTW.y===+y&&+TESTW.w===+w}
-function inTest(){return !!TESTW&&!!cur&&isTestRow(+cur.y||2026,cur.w)}
-function tflag(o){if(inTest())o.t=1;return o}
-function tkeep(o,w){return !o||!o.t||(!!TESTW&&+TESTW.w===+w)}
+/* anciens résultats saisis en « mode test » (fonction retirée) : toujours masqués */
+function tkeep(o){return !o||!o.t}
 function weekStartMs(y,w){var d=new Date(Date.UTC(y,0,4)),dw=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()-dw+1+(w-1)*7);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()).getTime()}
 function wedNoon(y,w){var d=new Date(weekStartMs(y,w));d.setDate(d.getDate()-5);d.setHours(12,0,0,0);return d.getTime()}
 function mergeProg(list){var m={},up=[];BASEWK.forEach(function(o){m[progKey(o)]=o});
- (list||[]).forEach(function(r){var o=r&&r.data;if(!o||!Array.isArray(o.days)||!o.days.length)return;var tw=r&&isTestRow(r.annee,r.semaine);if(!tw&&o.pub&&new Date(o.pub).getTime()>Date.now())return;o=JSON.parse(JSON.stringify(o));o.w=+r.semaine;o.y=+r.annee;
-  if(!tw&&+r.annee<2100&&weekStartMs(o.y,o.w)+5*3600000>Date.now()){up.push(o);return}m[progKey(o)]=o});
+ (list||[]).forEach(function(r){var o=r&&r.data;if(!o||!Array.isArray(o.days)||!o.days.length)return;if(o.pub&&new Date(o.pub).getTime()>Date.now())return;o=JSON.parse(JSON.stringify(o));o.w=+r.semaine;o.y=+r.annee;
+  if(+r.annee<2100&&weekStartMs(o.y,o.w)+5*3600000>Date.now()){up.push(o);return}m[progKey(o)]=o});
  UPCOMING=up.sort(function(a,b){return progKey(a)-progKey(b)});
  return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return progKey(b)-progKey(a)})}
 function setWK(arr){WK.length=0;arr.forEach(function(o){WK.push(o)})}
@@ -842,7 +841,7 @@ var DEL={};try{DEL=JSON.parse(localStorage.getItem("meute_del")||"{}")||{}}catch
 function esig(k,e){return k+"|"+(e.c?"c"+e.c:(e.sets?e.w+"|live":e.d+"|"+e.w+"|"+e.v+(e.bo?"|bo":"")))}
 function saveDel(){try{localStorage.setItem("meute_del",JSON.stringify(DEL))}catch(e){}}
 function storeDel(k,e){if(!e)return;DEL[esig(k,e)]=Date.now();saveDel();var L=store[k]||[],j=L.indexOf(e);if(j>=0)L.splice(j,1);if(!L.length)delete store[k]}
-Object.keys(store).forEach(function(k){var L=(store[k]||[]).filter(function(e){return tkeep(e,e&&e.w)&&!(e&&DEL[esig(k,e)])});if(L.length)store[k]=L;else delete store[k]});
+Object.keys(store).forEach(function(k){var L=(store[k]||[]).filter(function(e){return tkeep(e)&&!(e&&DEL[esig(k,e)])});if(L.length)store[k]=L;else delete store[k]});
 function save(){try{localStorage.setItem("meute",JSON.stringify(store))}catch(e){okStore=false}}
 save();
 function key(di,bi){return nkey(cur.days[di].n+"|"+cur.days[di].b[bi].h)}
@@ -1072,10 +1071,6 @@ function noteHTML(di){var k=cur.w+"|"+cur.days[di].n,lk=isLocked(di);
  return "<div class='blk snote'>"+(isNew(cur)?"<p class='lb' style='margin-top:0'>Ressenti de la séance</p>"+rpeHTML(SRPE[k]).replace("class='rpe'","class='rpe' id='srpe' data-nk='"+esc(k)+"'"):"")+"<label class='lb' for='snote'>Ma note de séance</label><textarea id='snote' data-nk='"+esc(k)+"' rows='3' maxlength='500' placeholder='Ressenti, douleur, technique à travailler…'"+(lk?" disabled":"")+">"+esc(SNOTE[k]||"")+"</textarea></div>"}
 
 /* ===== Compte en ligne (Supabase) ===== */
-var LM_DEV=/\.github\.io$/i.test(location.hostname);
-function lmFlag(){var b=document.createElement("div");b.textContent="TEST";b.setAttribute("style","position:fixed;top:0;left:0;z-index:2147483647;background:#e11d48;color:#fff;font:700 11px/1 system-ui,sans-serif;letter-spacing:.12em;padding:4px 10px;border-bottom-right-radius:8px;pointer-events:none");document.body.appendChild(b);document.title="[TEST] "+document.title}
-if(LM_DEV){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",lmFlag);else lmFlag()}
-var SB_URL=LM_DEV?"https://vrgocgrnizgfggwrwxfi.supabase.co":"https://mamzufeartpmdvspsngq.supabase.co",SB_KEY=LM_DEV?"sb_publishable_JYLJnhVEjAn3Qxe4KDOKJw_U2hsfExY":"sb_publishable_6xbqzPhtHXCHI61c3mVG-w_NIFSBaga";
 var SB_ON=!/claude|anthropic/i.test(location.hostname)&&location.protocol!=="file:";
 var SYNC_KEYS=["meute","meute_del","meute_pr","meute_obj","meute_lock","meute_prh","meute_bm","meute_note","meute_sexe","meute_lvl","meute_avc","meute_genre","meute_rpe","meute_pub"];
 var SB=null;try{SB=JSON.parse(localStorage.getItem("lm_sb")||"null")}catch(e){SB=null}
@@ -1123,7 +1118,7 @@ function ensureTok(){if(!SB)return Promise.reject(new Error("Non connecté"));if
   throw e});
  return REFR}
 function sbErrSt(e){SYNC.st=(navigator.onLine===false||e instanceof TypeError)?"off":"err";SYNC.err=e&&e.message||"";sbUI()}
-function storeReload(){try{DEL=JSON.parse(lsRaw("meute_del")||"{}")||{};var st=migrate(JSON.parse(lsRaw("meute")||"{}"));Object.keys(st).forEach(function(k){var L=st[k].filter(function(e){return tkeep(e,e&&e.w)&&!(e&&DEL[esig(k,e)])});if(L.length)st[k]=L;else delete st[k]});store=st;try{LK=JSON.parse(lsRaw("meute_lock")||"{}")||{}}catch(e){}}catch(e){}
+function storeReload(){try{DEL=JSON.parse(lsRaw("meute_del")||"{}")||{};var st=migrate(JSON.parse(lsRaw("meute")||"{}"));Object.keys(st).forEach(function(k){var L=st[k].filter(function(e){return tkeep(e)&&!(e&&DEL[esig(k,e)])});if(L.length)st[k]=L;else delete st[k]});store=st;try{LK=JSON.parse(lsRaw("meute_lock")||"{}")||{}}catch(e){}}catch(e){}
  try{var l=ld("meute_lvl","");LVL=(l==="rx"||l==="sc")?l:"";var x=ld("meute_sexe","");if(x==="h"||x==="f")SX=x;var g=ld("meute_genre","");if(g==="h"||g==="f")GENRE=g}catch(e){}}
 function sbPush(){if(!SB)return Promise.resolve();clearTimeout(SYNC.timer);var c=sbCollect();SYNC.st="run";sbUI();
  return ensureTok().then(function(){return sbFetch("/rest/v1/athlete_data?select=data&user_id=eq."+encodeURIComponent(SB.user.id),{auth:1}).catch(function(){return null})}).then(function(rows){
@@ -1437,7 +1432,7 @@ function progFetch(){if(!SB_ON)return Promise.resolve();
   if(CURTAB==="week"){openWeek(WK[0])}else if(CURTAB==="hist")histTab();else{var f=WK.filter(function(o){return o.w===curW})[0];if(f)cur=f}
  }).catch(function(){})}
 function pubView(){var y=new Date().getFullYear(),nxt=WK.length?(+WK[0].w)+1:1;
- var h="<div class='blk ccard'><div class='chead'><b>Publier une semaine</b></div><p class='s'>Colle ta programmation : après l’aperçu, elle est visible par tous les athlètes à la prochaine ouverture de l’appli"+(PROG_SITE==="test"?" (site de test uniquement)":"")+".</p>"+
+ var h="<div class='blk ccard'><div class='chead'><b>Publier une semaine</b></div><p class='s'>Colle ta programmation : après l’aperçu, elle est visible par tous les athlètes à la prochaine ouverture de l’appli"+".</p>"+
  "<label class='lb' for='cfrom' style='margin-top:0'>Modifier une semaine existante (facultatif)</label><select id='cfrom'><option value=''>Nouvelle semaine</option>"+UPCOMING.map(function(o,i){return "<option value='u"+i+"'>Semaine "+esc(o.w)+" (à venir)</option>"}).join("")+WK.map(function(o,i){return "<option value='"+i+"'>Semaine "+esc(o.w)+((o.y||2026)!==new Date().getFullYear()?" · "+esc(o.y||2026):"")+"</option>"}).join("")+(PROGROWS.filter(function(r){return r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()}).map(function(r){return "<option value='p"+esc(r.annee)+"|"+esc(r.semaine)+"'>Semaine "+esc(r.semaine)+" (programmée)</option>"}).join(""))+"</select>"+
  "<div class='row'><div style='flex:1'><label class='lb' for='cw'>Semaine n°</label><input id='cw' type='text' inputmode='numeric' maxlength='2' value='"+nxt+"'></div><div style='flex:1'><label class='lb' for='cy'>Année</label><input id='cy' type='text' inputmode='numeric' maxlength='4' value='"+y+"'></div></div>"+
  "<label class='lb' for='cd'>Dates (facultatif)</label><input id='cd' type='text' maxlength='40' placeholder='ex. 9 – 13 nov.' style='width:100%'>"+
@@ -1446,7 +1441,7 @@ function pubView(){var y=new Date().getFullYear(),nxt=WK.length?(+WK[0].w)+1:1;
  "<label class='lb' for='ct'>Programmation (Lundi à Vendredi)</label><div class='lnw'><div class='lnn' id='ctn' aria-hidden='true'>1</div><textarea id='ct' rows='16' wrap='off' spellcheck='false' autocapitalize='off' placeholder='Lundi : …&#10;Focus : …&#10;A. …'></textarea></div><p class='s' id='ctl'></p>"+
  "<div class='row' style='margin-top:10px'><button class='sv' data-pb='prev'>Voir l’aperçu</button></div><div id='cpv'></div><p class='s' id='cmsg' role='status'></p></div>";
  var on=PROGROWS.filter(function(r){return !(r.data&&r.data.ann)}).slice().sort(function(a,b){return (b.annee*100+b.semaine)-(a.annee*100+a.semaine)});
- h+="<div class='blk ccard'><div class='chead'><b>Semaines publiées en ligne</b><span class='tyb'>"+on.length+"</span></div>"+(on.length?on.map(function(r){return "<div class='rrow'><span class='dch'>S"+esc(r.semaine)+"</span><span class='rb'><span class='nm'>Semaine "+esc(r.semaine)+" · "+esc(r.annee)+"</span><span class='s'>"+(r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()?"⏰ programmée pour le "+esc(fdt(r.data.pub)):"publiée le "+esc(fdt(r.publie_le)))+"</span></span>"+(PROG_SITE==="test"?"<button class='sv alt' data-tw='"+(isTestRow(r.annee,r.semaine)?"stop":esc(r.annee)+"|"+esc(r.semaine))+"'>"+(isTestRow(r.annee,r.semaine)?"Arrêter le test":"🧪 Tester")+"</button>":"")+"<button class='sv alt' data-pd='"+esc(r.annee)+"|"+esc(r.semaine)+"'>Supprimer</button></div>"}).join(""):"<p class='s'>Aucune pour l’instant.</p>")+
+ h+="<div class='blk ccard'><div class='chead'><b>Semaines publiées en ligne</b><span class='tyb'>"+on.length+"</span></div>"+(on.length?on.map(function(r){return "<div class='rrow'><span class='dch'>S"+esc(r.semaine)+"</span><span class='rb'><span class='nm'>Semaine "+esc(r.semaine)+" · "+esc(r.annee)+"</span><span class='s'>"+(r.data&&r.data.pub&&new Date(r.data.pub).getTime()>Date.now()?"⏰ programmée pour le "+esc(fdt(r.data.pub)):"publiée le "+esc(fdt(r.publie_le)))+"</span></span>"+"<button class='sv alt' data-pd='"+esc(r.annee)+"|"+esc(r.semaine)+"'>Supprimer</button></div>"}).join(""):"<p class='s'>Aucune pour l’instant.</p>")+
  "<p class='s'>Les semaines "+esc(BASEWK.map(function(o){return o.w}).sort(function(a,b){return a-b}).filter(function(x,i,a){return i===0||i===a.length-1}).join(" à "))+" sont intégrées au site. Pour en corriger une, publie-la à nouveau avec le même numéro.</p></div>";
  return h}
 function lnSync(){var ct=document.getElementById("ct"),n=document.getElementById("ctn"),l=document.getElementById("ctl");if(!ct||!n)return;
@@ -1753,7 +1748,7 @@ function clsData(){var w0=+WK[0].w,res={};Object.keys(store).forEach(function(k)
  var bm={};BMS.forEach(function(B){var b=bmBest(B[0],B[2]);if(b)bm[B[0]]={v:b.v,rx:b.rx||""}});
  return {name:(SB&&SB.name)||"",g:GENRE,c:AVCI,l:LVL,res:res,bm:bm}}
 function clsAuto(){if(!PUB)return;var t=0;try{t=+localStorage.getItem("lm_clsT")||0}catch(e){}if(Date.now()-t<600000)return;try{localStorage.setItem("lm_clsT",String(Date.now()))}catch(e){}clsPush()}
-function clsPush(){if(!SB_ON||!SB||TESTW)return Promise.resolve();return ensureTok().then(function(){return PUB?sbFetch("/rest/v1/classement",{method:"POST",auth:1,prefer:"resolution=merge-duplicates,return=minimal",body:{user_id:SB.user.id,data:clsData(),updated_at:new Date().toISOString()}}):sbFetch("/rest/v1/classement?user_id=eq."+encodeURIComponent(SB.user.id),{method:"DELETE",auth:1,prefer:"return=minimal"})}).then(function(){BOARDT=0}).catch(function(){})}
+function clsPush(){if(!SB_ON||!SB)return Promise.resolve();return ensureTok().then(function(){return PUB?sbFetch("/rest/v1/classement",{method:"POST",auth:1,prefer:"resolution=merge-duplicates,return=minimal",body:{user_id:SB.user.id,data:clsData(),updated_at:new Date().toISOString()}}):sbFetch("/rest/v1/classement?user_id=eq."+encodeURIComponent(SB.user.id),{method:"DELETE",auth:1,prefer:"return=minimal"})}).then(function(){BOARDT=0}).catch(function(){})}
 function clsFetch(force){if(!SB_ON||!SB)return Promise.resolve(false);if(!force&&Date.now()-BOARDT<60000)return Promise.resolve(false);
  return ensureTok().then(function(){return sbFetch("/rest/v1/classement?select=user_id,data",{auth:1})}).then(function(r){if(!Array.isArray(r))return false;BOARDT=Date.now();var ch=JSON.stringify(r)!==JSON.stringify(BOARD);BOARD=r;try{localStorage.setItem("lm_board",JSON.stringify(r))}catch(e){}return ch}).catch(function(){return false})}
 /* binôme : un seul score, la dernière saisie ; à égalité l'original plutôt que la copie */
@@ -1856,7 +1851,7 @@ function validateRow(el,i){
  if(!kg){r.querySelector(".sk,.ek").setAttribute("aria-invalid","true");r.querySelector(".sk,.ek").focus();return}
  var dr0=readDraft(el,rt);
  var e=liveEntry(k);
- if(!e){var n=new Date();e=tflag({d:("0"+n.getDate()).slice(-2)+"/"+("0"+(n.getMonth()+1)).slice(-2),w:cur.w,v:"",sets:{},n:rt.t==="sets"?rt.n:rt.lab.length,c:Date.now()});(store[k]=store[k]||[]).push(e)}
+ if(!e){var n=new Date();e=({d:("0"+n.getDate()).slice(-2)+"/"+("0"+(n.getMonth()+1)).slice(-2),w:cur.w,v:"",sets:{},n:rt.t==="sets"?rt.n:rt.lab.length,c:Date.now()});(store[k]=store[k]||[]).push(e)}
  e.sets[i]=[kg,rp?num(rp.value):""];
  var em=rt.rot?Object.keys(e.sets).length:num((el.querySelector(".em")||{}).value);if(em)e.em=em;else delete e.em;
  e.rx=lvlTag();var f=rpeVal(el);if(f)e.f=+f;e.at=Date.now();delete e.cp;
@@ -1903,7 +1898,7 @@ function addRes(el){
  var k=key(di,bi),n=new Date(),dd=("0"+n.getDate()).slice(-2)+"/"+("0"+(n.getMonth()+1)).slice(-2);
  var e={d:dd,w:cur.w,v:v,c:Date.now(),at:Date.now()},rx=lvlTag(),f=rpeVal(el);
  if(rx)e.rx=rx;if(f)e.f=+f;
- tflag(e);(store[k]=store[k]||[]).push(e);save();setDraft(k,null);
+(store[k]=store[k]||[]).push(e);save();setDraft(k,null);
  PRP=null;var b=cur.days[di].b[bi],lift=hLift(b.h);
  if(!isNew(cur)&&lift&&!NOPR.test(b.h)){var kg=kgOf(v),pr=n2(PRM[lift]||"");if(kg>0&&pr>0&&kg>pr)PRP={k:k,lift:lift,kg:kg,old:pr}}
  renderRes(el);resMsg(el,true,"✓ Score enregistré : "+v+". Pense à valider ta séance en bas du jour.");
@@ -1918,7 +1913,7 @@ function bonusHTML(b,di,bi){var d=cur.days[di],dn=bonusDone(d,b,cur.w);
  return h+"</details>"}
 function bonusToggle(t){var p=t.dataset.bon.split("|"),d=cur.days[+p[0]],b=d.b[+p[1]],k=nkey(d.n+"|"+b.h);
  if(bonusDone(d,b,cur.w)){(store[k]||[]).filter(function(e){return e&&e.bo&&e.w===cur.w}).forEach(function(e){storeDel(k,e)})}
- else{(store[k]=store[k]||[]).push(tflag({d:today(),w:cur.w,v:"Bonus fait",bo:1,c:Date.now()}))}
+ else{(store[k]=store[k]||[]).push({d:today(),w:cur.w,v:"Bonus fait",bo:1,c:Date.now()})}
  save();show(+p[0])}
 function blockHTML(b,di,bi,ty){
  if(b.bo)return bonusHTML(b,di,bi);
@@ -1956,8 +1951,8 @@ function openWeek(o){cur=o;wk.textContent="Semaine "+o.w;if(NEWWK&&o===WK[0]){va
 function histTab(){
  wk.textContent="Historique";tabs.style.display="none";tabs.innerHTML="";
  var h="",SW=SB_ON&&SB&&can("pub")?schedWeeks():[];
- if(UPCOMING.length)h+="<h2>📅 À venir</h2>"+UPCOMING.map(function(o,k){return "<button class='wkb sch' data-upc='"+k+"'><span>Semaine "+esc(o.w)+(o.dates?" · "+esc(o.dates):"")+"</span><em>dès le "+esc(new Date(weekStartMs(o.y||2026,o.w)).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}))+"</em></button>"+twBtn(o)}).join("");
- if(SW.length)h+="<h2>🔒 Programmées</h2><p class='focus'>Visibles par toi seul jusqu’à leur publication.</p>"+SW.map(function(o,k){return "<button class='wkb sch' data-sch='"+k+"'><span>Semaine "+esc(o.w)+(o.dates?" · "+esc(o.dates):"")+"</span><em>le "+esc(fdt(o.pub))+"</em></button>"+twBtn(o)}).join("");
+ if(UPCOMING.length)h+="<h2>📅 À venir</h2>"+UPCOMING.map(function(o,k){return "<button class='wkb sch' data-upc='"+k+"'><span>Semaine "+esc(o.w)+(o.dates?" · "+esc(o.dates):"")+"</span><em>dès le "+esc(new Date(weekStartMs(o.y||2026,o.w)).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}))+"</em></button>"}).join("");
+ if(SW.length)h+="<h2>🔒 Programmées</h2><p class='focus'>Visibles par toi seul jusqu’à leur publication.</p>"+SW.map(function(o,k){return "<button class='wkb sch' data-sch='"+k+"'><span>Semaine "+esc(o.w)+(o.dates?" · "+esc(o.dates):"")+"</span><em>le "+esc(fdt(o.pub))+"</em></button>"}).join("");
  h+="<h2>Semaines passées</h2><p class='focus'>Touchez une semaine pour revoir ses séances.</p>";
  if(WK.length<2)h+="<div class='blk'><p>Pas encore de semaine passée.</p></div>";
  WK.slice(1).forEach(function(o,k){var n=0;Object.keys(store).forEach(function(kk){store[kk].forEach(function(e){if(e.w===o.w)n++})});
@@ -2543,7 +2538,6 @@ function teamAct(t){var a=t.dataset.tmb,d=cur.days[curDay],y=cur.y||2026,m=docum
  if(a==="del"){if(!t.dataset.arm){t.dataset.arm="1";t.textContent="Confirmer";return}t.disabled=true;
   ensureTok().then(function(){return sbFetch("/rest/v1/rpc/clear_binome",{method:"POST",auth:1,body:{p_annee:+y,p_semaine:+cur.w,p_jour:d.n}})}).then(binFetch).then(function(){show(curDay)})
   .catch(function(e){t.disabled=false;if(m)m.textContent=frErr(e)});return}
- if(inTest()){if(m)m.textContent="🧪 Mode test : les binômes ne sont pas enregistrés (ils apparaîtraient dans l’appli réelle). Le bouton « Je le fais seul » fonctionne.";return}
  var s=document.getElementById("tmsel"),pid=s&&s.value;if(!pid){if(m)m.textContent="Choisis ton partenaire dans la liste.";return}t.disabled=true;
  ensureTok().then(function(){return sbFetch("/rest/v1/rpc/set_binome",{method:"POST",auth:1,body:{p_annee:+y,p_semaine:+cur.w,p_jour:d.n,p_partner:pid}})})
  .then(binFetch).then(function(){show(curDay);binPushSoon()})
@@ -2618,8 +2612,6 @@ box.onclick=function(e){
  if(t.dataset&&t.dataset.ms){mesSave();return}
  if(t.dataset&&t.dataset.msd){if(!t.dataset.arm){t.dataset.arm="1";t.textContent="Supprimer ?";t.classList.add("arm");return}mesDel(t.dataset.msd);return}
  if(t.dataset&&t.dataset.cal){calMove(+t.dataset.cal);return}
- if(t.dataset&&t.dataset.tw){if(PROG_SITE!=="test")return;if(t.dataset.tw==="stop"){try{localStorage.removeItem("lm_testwk")}catch(e){}}else{var tp=t.dataset.tw.split("|");try{localStorage.setItem("lm_testwk",JSON.stringify({y:+tp[0],w:+tp[1]}))}catch(e){}}
-  try{localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload();return}
  if(t.dataset&&t.dataset.prj){prjOpen(t.dataset.prj);return}
  if(t.dataset&&t.dataset.cv){calAsk(t.dataset.cv);return}
  if(t.dataset&&t.dataset.cvy){calSet(t.dataset.cvy,true);return}
@@ -2638,7 +2630,7 @@ box.onclick=function(e){
  if(t.dataset&&t.dataset.today){show(+t.dataset.today);return}
  if(t.dataset&&t.dataset.fold){var c=t.dataset.fold==="0";[].forEach.call(box.querySelectorAll("details.blk"),function(x){x.open=!c});t.dataset.fold=c?"1":"0";t.textContent=c?"Tout déplier":"Tout replier";return}
  if(t.dataset&&t.dataset.lock!==undefined&&t.classList.contains("sv")){
-  if(t.dataset.arm){autoValidate();var dl=+t.dataset.lock,bef=JSON.parse(JSON.stringify(PRM)),pv={};PRMSG[lkey(dl)]=prUpdate(dl);Object.keys(PRM).forEach(function(l){if(PRM[l]!==bef[l])pv[l]=[bef[l]||"",PRM[l]]});LK[lkey(dl)]=tflag({prev:pv});saveLK();show(dl)}
+  if(t.dataset.arm){autoValidate();var dl=+t.dataset.lock,bef=JSON.parse(JSON.stringify(PRM)),pv={};PRMSG[lkey(dl)]=prUpdate(dl);Object.keys(PRM).forEach(function(l){if(PRM[l]!==bef[l])pv[l]=[bef[l]||"",PRM[l]]});LK[lkey(dl)]={prev:pv};saveLK();show(dl)}
   else{t.dataset.arm="1";t.textContent="Confirmer : tout sera verrouillé";t.classList.add("alt")}
   return}
  if(t.dataset&&t.dataset.bon){bonusToggle(t);return}
@@ -2648,7 +2640,7 @@ box.onclick=function(e){
  if(t.dataset&&t.dataset.unlock!==undefined){
   if(t.dataset.arm){var du=+t.dataset.unlock,ku=lkey(du),o=LK[ku];
    if(o&&o.prev){Object.keys(o.prev).forEach(function(l){if(PRM[l]===o.prev[l][1]){prUnlog(l,o.prev[l][1]);if(o.prev[l][0])PRM[l]=o.prev[l][0];else delete PRM[l]}});savePR()}
-   LK[ku]=tflag({re:1});saveLK();delete PRMSG[ku];show(du)}
+   LK[ku]={re:1};saveLK();delete PRMSG[ku];show(du)}
   else{t.dataset.arm="1";t.textContent="Confirmer la réouverture"}
   return}
  var el=t.closest&&t.closest(".res");if(!el)return;
@@ -2811,17 +2803,7 @@ function prjOpen(l){var I=prjInfo(l),P=I.pts,last=P[P.length-1];
  "<p class='s'>1RM estimé = charge × (1 + reps ÷ 30), sur la meilleure série de chaque séance (séries de 10 reps au plus). La tendance utilise les 10 dernières semaines.</p><div class='obtn'><button class='sv' data-ov='close'>Fermer</button></div>";
  ovlShow(h)}
 
-/* ===== Site de test : jouer une semaine programmée comme semaine en cours ===== */
-if(PROG_SITE==="test"){var _openWeekT=openWeek;openWeek=function(o){var r=_openWeekT.apply(this,arguments);try{if(inTest()){var bx=document.getElementById("tstb");if(!bx){bx=document.createElement("div");bx.id="tstb";bx.className="tstb";var day=document.getElementById("day");day.parentNode.insertBefore(bx,day)}
-  bx.innerHTML="<b>🧪 Mode test · Semaine "+esc(o.w)+" ("+esc(o.y||2026)+")</b><span>Jouée comme semaine en cours, sur ce téléphone uniquement. Tes résultats de test restent cachés dans l’appli réelle ; binômes et classement non enregistrés.</span><button class='sv alt' data-tw='stop'>Arrêter le test</button>";bx.querySelector("button").onclick=function(){try{localStorage.removeItem("lm_testwk");localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload()}}
- else{var b2=document.getElementById("tstb");if(b2)b2.remove()}}catch(e){}return r}}
-
-function twBtn(o){if(PROG_SITE!=="test"||!o)return "";var y=+o.y||2026,on=isTestRow(y,o.w);return "<button class='sv alt twb' data-tw='"+(on?"stop":y+"|"+o.w)+"'>"+(on?"Arrêter le test de la semaine "+esc(o.w):"🧪 Tester la semaine "+esc(o.w)+" comme semaine en cours")+"</button>"}
-if(PROG_SITE==="test")document.addEventListener("click",function(ev){var t=ev.target.closest&&ev.target.closest("[data-tw]");if(!t)return;ev.stopPropagation();ev.preventDefault();
- if(t.dataset.tw==="stop"){try{localStorage.removeItem("lm_testwk")}catch(e){}}else{var tp=t.dataset.tw.split("|");try{localStorage.setItem("lm_testwk",JSON.stringify({y:+tp[0],w:+tp[1]}))}catch(e){}}
- try{localStorage.removeItem("lm_seenwk")}catch(e){}location.hash="";location.reload()},true);
-
-/* ===== 3.2 (site de test) : page « Découvrir l’appli » avec une journée de démo ===== */
+/* ===== Page « Découvrir l’appli » (démo + formulaire de contact, prod et dev) ===== */
 var DEMO_ON=false,DM={lvl:"",sx:"h",pr:100,sets:{},amrap:null,bonus:false,ct:null},DMT=null;
 var DEMO_HEAD="Lundi : Journée type · Force & Metcon\nFocus : force des jambes, puis un metcon court et intense\nA. Échauffement : 12 min\n3 rounds : 200 m Row, 10 Air Squats, 10 PVC Pass-through\n";
 var DEMO_P={rx:"B. Back Squat : 5 séries de 5 reps @ 75 % du 1RM Back Squat\nRepos : 2 min entre les séries\nC. Metcon : AMRAP 12 min\n15 Wall Balls (♂ 9 kg | ♀ 6 kg)\n12 Burpees Over Bar\n9 Power Cleans (♂ 60 kg | ♀ 40 kg)\n6 Toes-to-Bar\n",
@@ -2829,7 +2811,7 @@ var DEMO_P={rx:"B. Back Squat : 5 séries de 5 reps @ 75 % du 1RM Back Squat\nRe
  sc:"B. Back Squat : 5 séries de 8 reps @ 60 % du 1RM Back Squat\nRepos : 90 s entre les séries\nC. Metcon : AMRAP 12 min\n10 Wall Balls (♂ 6 kg | ♀ 4 kg)\n8 Burpees\n9 Hang Power Cleans (♂ 30 kg | ♀ 20 kg)\n10 Sit-ups\n"};
 var DEMO_B="➕ BONUS (10 min) — Gainage\n3 rounds : 30 s Hollow Hold, 30 s Side Plank de chaque côté";
 function demoTxt(){return DEMO_HEAD+(DEMO_P[DM.lvl]||DEMO_P[""])+DEMO_B}
-function demoAllowed(){return PROG_SITE==="test"}
+function demoAllowed(){return true}
 function demoWith(fn){var L0=LVL,S0=SX,G0=GENRE,P0=PRM.back,C0=CURPAIR;LVL=DM.lvl;SX=DM.sx;GENRE=DM.sx;PRM.back=String(DM.pr);CURPAIR=null;try{return fn()}finally{LVL=L0;SX=S0;GENRE=G0;if(P0===undefined)delete PRM.back;else PRM.back=P0;CURPAIR=C0}}
 function demoSeg(k,opts,v){return "<div class='dmseg' role='group'>"+opts.map(function(o){return "<button data-dm='"+k+"|"+o[0]+"' aria-pressed='"+(o[0]===v)+"'"+(o[0]===v?" class='on'":"")+">"+o[1]+"</button>"}).join("")+"</div>"}
 function demoDayHTML(){return demoWith(function(){var d=parseWeek(demoTxt())[0],pn=DM.lvl==="rx"?"🐺 Alpha (RX)":DM.lvl==="sc"?"🐾 Louveteau (Scaled)":"🏹 Chasseur (intermédiaire)",h="<div class='dmday'><p class='dmpv'>Version "+pn+" · "+(DM.sx==="f"?"♀ Femme":"♂ Homme")+"</p><h3 class='dmdt'>"+esc(d.t)+"</h3><p class='focus'>"+esc(d.f)+"</p>";
