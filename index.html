@@ -1863,7 +1863,7 @@ function introCheck(){var seen="";try{seen=localStorage.getItem("lm_intro")||""}
 
 /* ===== Journal des versions (espace coach) ===== */
 var CHLOG=[
- ["3.6.2","10 nov. 2026","Classements For Time et podium",0,["For Time : ceux qui finissent passent devant, puis ceux au time cap, classés du moins de reps restantes au plus","Podium : score « Cap » affiché en court (+4, reps au cap) et plus de chevauchements entre pastille, nom et score"]],
+ ["3.6.2","10 nov. 2026","Classements For Time et podium",0,["For Time : ceux qui finissent passent devant, puis ceux au time cap, classés du moins de reps restantes au plus","Podium : score « Cap » affiché en court (−4, reps restantes) et plus de chevauchements entre pastille, nom et score"]],
  ["3.6.1","10 nov. 2026","WOD perso envoyés au binôme",0,["Après l’enregistrement, « bien envoyé à … » ne s’affiche que quand le serveur a vraiment reçu le WOD, sinon un message d’erreur clair","Compte › Mes séances : bouton « 🔄 Actualiser les WOD reçus » pour récupérer tout de suite les WOD envoyés par ton binôme"]],
  ["3.6","10 nov. 2026","Gym : interrupteur RX / Scaled",0,["Chaque bloc Gymnastique a son interrupteur RX / Scaled, indépendant de ta piste","Par défaut : RX pour Alpha, Scaled pour Chasseur et Louveteau ; ton choix est retenu pour ce bloc","Sans ligne Scaled écrite par le coach, l’appli propose la version adaptée (ex. Ring Muscle-Ups → Chest-to-Bar Pull-Ups, Toes to Bar → Hanging Knee Raises)","Seul l’affichage change : tes résultats et ta piste restent les mêmes"]],
  ["3.5","10 nov. 2026","Espace coach repensé",0,[
@@ -3048,7 +3048,7 @@ function athDetail(a){var nm=nOf(a.name),sx=a.d.meute_genre||a.d.meute_sexe,ass=
 var TFIL=0;
 function cFilt(L,d){if(!TFIL)return L;return L.filter(function(o){var r=o.e.rx||"";return TFIL===1?r==="Rx":TFIL===2?r==="Scaled":!!o.pn})}
 function cPodium(L){if(L.length<3)return "";var P=[L[1],L[0],L[2]],cls=["p2","p1","p3"],rk=["2e","1er","3e"];
- return "<div class='cpod'>"+P.map(function(o,i){var s=splitScore(o.e.v)[0],cm=/^\s*cap\b\D*(\d+)?/i.exec(s),sub="";if(cm){s=cm[1]?"+"+cm[1]:"Cap";sub=cm[1]?"reps au cap":"time cap"}
+ return "<div class='cpod'>"+P.map(function(o,i){var s=splitScore(o.e.v)[0],cm=/^\s*cap\b\D*(\d+)?/i.exec(s),sub="";if(cm){s=cm[1]?"−"+cm[1]:"Cap";sub=cm[1]?"reps restantes":"time cap"}
   return "<div class='"+cls[i]+"'><b>"+esc(nOf(o.a.name)+(o.pn?" & "+o.pn:""))+"</b>"+pill(o.e.rx)+"<div class='cpb'><span"+(s.length>8?" class='lg'":"")+">"+esc(s)+"</span>"+(sub?"<small class='cps'>"+sub+"</small>":"")+"<small>"+rk[i]+"</small></div></div>"}).join("")+"</div>"}
 
 /* Publier : alertes du cahier des charges */
