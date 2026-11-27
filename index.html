@@ -2220,15 +2220,15 @@ section.valc.valfut{display:none!important}
 .pch .pcn{flex:1;min-width:0;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 10px;font:600 14.5px Barlow,system-ui,sans-serif}
 .pci{width:36px;height:36px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:15px;cursor:pointer;padding:0}
 .pci:disabled{opacity:.35}
-.pcr{display:grid;grid-template-columns:1fr 46px 84px 46px;gap:6px;align-items:center;margin:4px 0}.pcr>span{font-size:14.5px;color:var(--mute)}
-.pcr .crb,.pcb .crb{width:46px;height:44px;margin:0}
+.pzr{display:grid;grid-template-columns:1fr 46px 84px 46px;gap:6px;align-items:center;margin:4px 0}.pzr>span{font-size:14.5px;color:var(--mute)}
+.pzr .crb,.pzb .crb{width:46px;height:44px;margin:0}
 .pcv{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:800 22px Barlow,system-ui,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;padding:0}
-.pcb{display:grid;grid-template-columns:1fr 46px 84px 46px;gap:6px;align-items:center;margin:0 4px 8px;padding:6px 8px;border:1px dashed var(--line);border-radius:12px}.pcb>span{font-size:13.5px;color:var(--mute)}
-.pcb .pcv{font-size:18px}
+.pzb{display:grid;grid-template-columns:1fr 46px 84px 46px;gap:6px;align-items:center;margin:0 4px 8px;padding:6px 8px;border:1px dashed var(--line);border-radius:12px}.pzb>span{font-size:13.5px;color:var(--mute)}
+.pzb .pcv{font-size:18px}
 .pcadd{width:100%;min-height:48px;border-radius:14px;border:1.5px dashed var(--line);background:none;color:var(--ink);font:700 16px Barlow,system-ui,sans-serif;margin:2px 0 10px;cursor:pointer}
 .pctot{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);margin-bottom:10px}.pctot b{font:800 26px Barlow,system-ui,sans-serif}
 .pcsv{display:flex;gap:6px}.pcsv input{flex:1;min-width:0;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 10px;font:600 14.5px Barlow,system-ui,sans-serif}.pcsv .sv{width:auto;white-space:nowrap;padding:0 12px}
-.pcl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 8px;display:flex;align-items:center;gap:8px}.pcl>div{flex:1;min-width:0}.pcl b{display:block;font-size:16px}.pcl small{color:var(--mute);font-size:13px}
+.pzl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 8px;display:flex;align-items:center;gap:8px}.pzl>div{flex:1;min-width:0}.pzl b{display:block;font-size:16px}.pzl small{color:var(--mute);font-size:13px}
 .pcgo{width:44px;height:44px;border-radius:12px;border:0;background:#d42a2a;color:#fff;font-size:16px;cursor:pointer}
 /* b7 : EMOM en temps ou en rounds */
 .cseg.emsg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:13px;background:var(--card);border:1px solid var(--line);margin:0 0 10px}
@@ -6342,13 +6342,13 @@ var _calcTP=calcT;calcT=function(){if(TM.mode!=="perso")return _calcTP();
  if(s.k==="w"){o.ph="Travail"+(cy.n?" · "+cy.n:"");o.col="var(--gr)"}else if(s.k==="r"){o.ph="Repos";o.col="var(--mute)"}else{o.ph="Repos entre cycles";o.col="var(--mute)"}
  o.sub=(s.k==="b"?"Fin du cycle "+(s.c+1)+"/"+PC.cy.length:"Cycle "+(s.c+1)+"/"+PC.cy.length+" · Tour "+s.r+"/"+cy.rn)+" · ensuite : "+pcNext(S,j)+" · reste "+mmss(Math.ceil(T-t));return o};
 function pcOps(){var el=document.getElementById("tops");if(!el||TM.mode!=="perso")return;var lk=TM.run||TM.base>0,D=lk?" disabled":"",n=PC.cy.length;
- var row=function(i,f,lab,v){return "<div class='pcr'><span>"+lab+"</span><button type='button' class='crb' data-pc='"+i+"|"+f+"|-1'"+D+" aria-label='Moins'>−</button><button type='button' class='pcv' data-pcw='"+i+"|"+f+"'"+D+">"+v+"</button><button type='button' class='crb' data-pc='"+i+"|"+f+"|1'"+D+" aria-label='Plus'>+</button></div>"};
+ var row=function(i,f,lab,v){return "<div class='pzr'><span>"+lab+"</span><button type='button' class='crb' data-pc='"+i+"|"+f+"|-1'"+D+" aria-label='Moins'>−</button><button type='button' class='pcv' data-pcw='"+i+"|"+f+"'"+D+">"+v+"</button><button type='button' class='crb' data-pc='"+i+"|"+f+"|1'"+D+" aria-label='Plus'>+</button></div>"};
  var h="";PC.cy.forEach(function(c,i){h+="<div class='pcc'><div class='pch'><b>Cycle "+(i+1)+"</b><input type='text' class='pcn' data-pcn='"+i+"' maxlength='24' placeholder='Nom (facultatif)' value='"+esc(c.n||"")+"'"+D+"><button type='button' class='pci' data-pcm='"+i+"|-1'"+(i===0||lk?" disabled":"")+" aria-label='Monter'>↑</button><button type='button' class='pci' data-pcm='"+i+"|1'"+(i===n-1||lk?" disabled":"")+" aria-label='Descendre'>↓</button><button type='button' class='pci' data-pcx='"+i+"'"+(n<2||lk?" disabled":"")+" aria-label='Supprimer'>🗑</button></div>"+
   row(i,"wk","Travail",mmss(c.wk))+row(i,"rs","Repos",c.rs?mmss(c.rs):"aucun")+row(i,"rn","Tours","× "+c.rn)+"</div>";
-  if(i<n-1)h+="<div class='pcb'><span>⏸ Repos entre cycles</span><button type='button' class='crb' data-pc='"+i+"|bt|-1'"+D+" aria-label='Moins'>−</button><button type='button' class='pcv' data-pcw='"+i+"|bt'"+D+">"+(pcBt(i)?mmss(pcBt(i)):"aucun")+"</button><button type='button' class='crb' data-pc='"+i+"|bt|1'"+D+" aria-label='Plus'>+</button></div>"});
+  if(i<n-1)h+="<div class='pzb'><span>⏸ Repos entre cycles</span><button type='button' class='crb' data-pc='"+i+"|bt|-1'"+D+" aria-label='Moins'>−</button><button type='button' class='pcv' data-pcw='"+i+"|bt'"+D+">"+(pcBt(i)?mmss(pcBt(i)):"aucun")+"</button><button type='button' class='crb' data-pc='"+i+"|bt|1'"+D+" aria-label='Plus'>+</button></div>"});
  h+="<button type='button' class='pcadd' data-pca='1'"+D+">+ Ajouter un cycle</button><div class='pctot'><span>Total · "+n+" cycle"+(n>1?"s":"")+"</span><b>"+mmss(pcTot())+"</b></div>"+
   "<div class='pcsv'><input type='text' id='pcsn' maxlength='30' placeholder='Nom du chrono (ex. Intervalles du jeudi)'"+D+"><button type='button' class='sv alt' data-pcs='1'"+D+">💾 Enregistrer</button></div><p class='s' id='pcsm' role='status'></p>";
- if(PCSV.length)h+="<p class='slab2'>Mes chronos</p>"+PCSV.map(function(x,k){return "<div class='pcl'><div><b>"+esc(x.name)+"</b><small>"+x.cy.length+" cycle"+(x.cy.length>1?"s":"")+" · "+mmss(pcTot(x))+"</small></div><button type='button' class='pci' data-pcd='"+k+"'"+D+" aria-label='Supprimer ce chrono'>🗑</button><button type='button' class='pcgo' data-pcl='"+k+"'"+D+" aria-label='Charger ce chrono'>▶</button></div>"}).join("");
+ if(PCSV.length)h+="<p class='slab2'>Mes chronos</p>"+PCSV.map(function(x,k){return "<div class='pzl'><div><b>"+esc(x.name)+"</b><small>"+x.cy.length+" cycle"+(x.cy.length>1?"s":"")+" · "+mmss(pcTot(x))+"</small></div><button type='button' class='pci' data-pcd='"+k+"'"+D+" aria-label='Supprimer ce chrono'>🗑</button><button type='button' class='pcgo' data-pcl='"+k+"'"+D+" aria-label='Charger ce chrono'>▶</button></div>"}).join("");
  el.className="tops pcw";el.innerHTML=h;var lb=el.previousElementSibling;if(lb&&lb.classList.contains("slab2"))lb.textContent="Mon chrono perso"}
 var _chronoTabP=chronoTab;chronoTab=function(){_chronoTabP();try{var sg=box.querySelector(".cseg.tmseg");if(sg&&!sg.querySelector("[data-tmm=perso]")){sg.insertAdjacentHTML("beforeend","<button type='button' data-tmm='perso' aria-pressed='"+(TM.mode==="perso")+"'>Perso</button>");sg.classList.add("tm5")}
  var o0=TMOPS;TMOPS=function(){if(TM.mode==="perso"){var lk=TM.run||TM.base>0;[].forEach.call(box.querySelectorAll("[data-tmm]"),function(b){b.setAttribute("aria-pressed",String(b.dataset.tmm===TM.mode));b.disabled=lk&&b.dataset.tmm!==TM.mode});pcOps()}else{var el=document.getElementById("tops");if(el){el.className="tops";var lb=el.previousElementSibling;if(lb&&lb.classList.contains("slab2"))lb.textContent="Réglages"}o0()}};TMOPS();tick()}catch(e){}};
@@ -6554,6 +6554,8 @@ var _bnhVd=bonusHTML;bonusHTML=function(b,di,bi){return vdDeco(_bnhVd.apply(this
 document.addEventListener("click",function(ev){var a=ev.target.closest&&ev.target.closest(".vdb");if(!a||!a.closest("summary"))return;
  ev.preventDefault();ev.stopPropagation();try{var w=window.open(a.href,"_blank");if(w)w.opener=null}catch(e){}},true);
 try{if(CURTAB==="week"&&cur&&typeof curDay==="number")show(curDay)}catch(e){}
+
+/* 4.0.40-b2 : collision de classes corrigée : le chrono Perso (4.0.38-b6) réutilisait .pcr/.pcb/.pcl du tableau des pourcentages (onglet PR › Charges) ; ses classes deviennent .pzr/.pzb/.pzl */
 
 </script>
 </body></html>
